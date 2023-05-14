@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: php-httpd-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/swilson/github/safe_mgmt_k8s/DocumentRoot"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: php-httpd-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: manual
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-httpd-service
+spec:
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 80
+  selector:
+    app: php-httpd
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: php-httpd
+  name: php-httpd-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-httpd
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: php-httpd
+    spec:
+      containers:
+      - image: docker.io/credulous/php-httpd:dev
+        name: php-httpd
+        ports:
+        - containerPort: 80
+        resources: {}
+        volumeMounts:
+        - mountPath: "/var/www/html"
+          name: php-httpd-docroot
+      restartPolicy: Always
+      volumes:
+      - name: php-httpd-docroot
+        persistentVolumeClaim:
+          claimName: php-httpd-claim
+status: {}

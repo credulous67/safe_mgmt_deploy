@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: fedora
+  name: fedora-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fedora
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: fedora
+    spec:
+      containers:
+      - name: fedora
+        image: docker.io/credulous/fedora:37
+        resources: {}
+      restartPolicy: Always
+status: {}
