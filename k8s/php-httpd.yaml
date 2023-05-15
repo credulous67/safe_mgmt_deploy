@@ -11,7 +11,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/home/swilson/github/safe_mgmt_k8s/DocumentRoot"
+    path: "/code"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -66,8 +66,18 @@ spec:
         - containerPort: 80
         resources: {}
         volumeMounts:
-        - mountPath: "/var/www/html"
+        - mountPath: "/var/www"
           name: php-httpd-docroot
+      initContainers:
+      - image: docker.io/credulous/fedora:37
+        name: code-deploy
+        volumeMounts:
+        - mountPath: "/var/www"
+          name: php-httpd-docroot
+        command:
+        - 'sh'
+        - '-c'
+        - 'rm -rf /var/www/* && git clone https://github.com/credulous67/safe_mgmt_code.git /var/www'
       restartPolicy: Always
       volumes:
       - name: php-httpd-docroot

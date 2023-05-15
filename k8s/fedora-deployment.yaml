@@ -19,5 +19,6 @@ spec:
       - name: fedora
         image: docker.io/credulous/fedora:37
         resources: {}
+        imagePullPolicy: Always
       restartPolicy: Always
 status: {}

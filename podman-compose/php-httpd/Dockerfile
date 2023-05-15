@@ -8,7 +8,9 @@ COPY php_dev.ini /etc/php.ini
 COPY supervisord.conf /etc/supervisord.conf
 # decided to use pwqcheck rather that pwscore
 #COPY pwquality.conf /etc/security/pwquality.conf
-COPY passwdqc.conf /etc/passwdqc.conf
+COPY passwdqc.conf /etc/passwdqc.c
+RUN rm -rf /var/www
+RUN git clone https://github.com/credulous67/safe_mgmt_code.git /var/www
 #ENTRYPOINT /usr/sbin/httpd -DFOREGROUND
 ENTRYPOINT /usr/bin/supervisord -c /etc/supervisord.conf -n
 #ENTRYPOINT tail -f /dev/null
